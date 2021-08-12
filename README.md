@@ -1,4 +1,4 @@
-+ Prometheus Installtion(with Grafana)
+# + Prometheus Installtion(with Grafana)
 ```
 kubectl create ns monitoring
 ```
