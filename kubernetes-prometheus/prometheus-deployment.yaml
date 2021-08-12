@@ -3,6 +3,8 @@ kind: Deployment
 metadata:
   name: prometheus-deployment
   namespace: monitoring
+  labels:
+    app: prometheus-server
 spec:
   replicas: 1
   selector:
@@ -15,7 +17,7 @@ spec:
     spec:
       containers:
         - name: prometheus
-          image: prom/prometheus:latest
+          image: prom/prometheus
           args:
             - "--config.file=/etc/prometheus/prometheus.yml"
             - "--storage.tsdb.path=/prometheus/"
@@ -31,5 +33,6 @@ spec:
           configMap:
             defaultMode: 420
             name: prometheus-server-conf
+  
         - name: prometheus-storage-volume
           emptyDir: {}

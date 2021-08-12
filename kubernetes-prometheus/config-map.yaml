@@ -8,26 +8,15 @@ metadata:
 data:
   prometheus.rules: |-
     groups:
-    - name: container memory alert
+    - name: devopscube demo alert
       rules:
-      - alert: container memory usage rate is very high( > 55%)
-        expr: sum(container_memory_working_set_bytes{pod!="", name=""})/ sum (kube_node_status_allocatable_memory_bytes) * 100 > 55
+      - alert: High Pod Memory
+        expr: sum(container_memory_usage_bytes) > 1
         for: 1m
         labels:
-          severity: fatal
+          severity: slack
         annotations:
-          summary: High Memory Usage on 
-          identifier: ""
-          description: " Memory Usage: "
-    - name: container CPU alert
-      rules:
-      - alert: container CPU usage rate is very high( > 10%)
-        expr: sum (rate (container_cpu_usage_seconds_total{pod!=""}[1m])) / sum (machine_cpu_cores) * 100 > 10
-        for: 1m
-        labels:
-          severity: fatal
-        annotations:
-          summary: High Cpu Usage
+          summary: High Memory Usage
   prometheus.yml: |-
     global:
       scrape_interval: 5s
@@ -42,6 +31,14 @@ data:
           - "alertmanager.monitoring.svc:9093"
 
     scrape_configs:
+      - job_name: 'node-exporter'
+        kubernetes_sd_configs:
+          - role: endpoints
+        relabel_configs:
+        - source_labels: [__meta_kubernetes_endpoints_name]
+          regex: 'node-exporter'
+          action: keep
+      
       - job_name: 'kubernetes-apiservers'
 
         kubernetes_sd_configs:
@@ -76,9 +73,8 @@ data:
         - source_labels: [__meta_kubernetes_node_name]
           regex: (.+)
           target_label: __metrics_path__
-          replacement: /api/v1/nodes/${1}/proxy/metrics
-
-
+          replacement: /api/v1/nodes/${1}/proxy/metrics     
+      
       - job_name: 'kubernetes-pods'
 
         kubernetes_sd_configs:
@@ -105,7 +101,7 @@ data:
         - source_labels: [__meta_kubernetes_pod_name]
           action: replace
           target_label: kubernetes_pod_name
-
+      
       - job_name: 'kube-state-metrics'
         static_configs:
           - targets: ['kube-state-metrics.kube-system.svc.cluster.local:8080']
@@ -130,7 +126,7 @@ data:
           regex: (.+)
           target_label: __metrics_path__
           replacement: /api/v1/nodes/${1}/proxy/metrics/cadvisor
-
+      
       - job_name: 'kubernetes-service-endpoints'
 
         kubernetes_sd_configs:
