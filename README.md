@@ -2,3 +2,5 @@
 ```
 kubectl create ns monitoring
 ```
+
+### Prometheus_PORT: 30000, Grafana_PORT: 30001
