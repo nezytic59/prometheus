@@ -1,1 +1,3 @@
-# promethues
+```
+kubectl create ns monitoring
+```
