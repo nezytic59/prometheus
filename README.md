@@ -1,7 +1,5 @@
 + # Prometheus Installtion(with Grafana)
 ```
-kubectl craete ns monoitoring
-
 kubectl create -f promethues/prometheus/
 kubectl create -f promethues/node-exporter/
 kubectl create -f promethues/kube-state-metrics-configs/
